@@ -1,0 +1,136 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Wakyeng PDF Sign</title>
+<link rel="icon" href="favicon.png">
+<link rel="stylesheet" href="editor.css">
+<style>
+  #link-panel {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 24px;
+    background: #f1f3f4;
+    font-family: Roboto, Arial, sans-serif;
+  }
+
+  #link-panel img {
+    width: 72px;
+    height: 72px;
+    border-radius: 16px;
+  }
+
+  #link-panel h1 {
+    font-size: 20px;
+    color: #202124;
+    margin: 0;
+  }
+
+  #link-panel p {
+    color: #5f6368;
+    font-size: 14px;
+    text-align: center;
+    max-width: 360px;
+    margin: 0;
+  }
+
+  #link-form {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    max-width: 480px;
+  }
+
+  #drive-link-input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  #open-link-btn {
+    background: #1a73e8;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  #open-link-btn:hover {
+    background: #1765cc;
+  }
+
+  #link-status {
+    min-height: 18px;
+    font-size: 13px;
+    color: #d93025;
+  }
+</style>
+</head>
+<body>
+
+  <div id="link-panel">
+    <img src="favicon.png" alt="Wakyeng PDF Sign">
+    <h1>Wakyeng PDF Sign</h1>
+    <p>Tempel link PDF Google Drive Anda, lalu tambahkan tanda tangan atau gambar dan simpan langsung ke Drive.</p>
+    <form id="link-form">
+      <input type="text" id="drive-link-input" placeholder="https://drive.google.com/file/d/..." autocomplete="off">
+      <button type="submit" id="open-link-btn">Buka</button>
+    </form>
+    <div id="link-status"></div>
+  </div>
+
+  <div id="editor-app" style="display:none">
+    <div id="toolbar">
+      <span id="status">Memuat...</span>
+      <div id="toolbar-actions">
+        <select id="page-select" title="Tambahkan ke halaman"></select>
+        <label class="btn" id="upload-label">
+          + Upload Gambar
+          <input type="file" id="image-input" accept="image/png,image/jpeg" hidden>
+        </label>
+        <button class="btn" id="draw-sign-btn">✍ Gambar Tanda Tangan</button>
+        <button id="save-btn" disabled>Simpan ke Drive</button>
+      </div>
+    </div>
+    <div id="viewer"></div>
+
+    <div id="sign-modal" class="modal-overlay hidden">
+      <div class="modal-box">
+        <div class="modal-header">
+          <span>Gambar Tanda Tangan</span>
+          <button id="sign-modal-close" class="icon-btn">×</button>
+        </div>
+        <canvas id="sign-pad" width="520" height="220"></canvas>
+        <div class="modal-controls">
+          <label>Warna
+            <input type="color" id="sign-color" value="#1a1a2e">
+          </label>
+          <label>Ketebalan
+            <input type="range" id="sign-thickness" min="1" max="12" value="3">
+          </label>
+          <button id="sign-clear-btn" class="btn-secondary">Hapus</button>
+        </div>
+        <div class="modal-footer">
+          <button id="sign-cancel-btn" class="btn-secondary">Batal</button>
+          <button id="sign-use-btn" class="btn">Gunakan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="vendor/pdf.min.js"></script>
+  <script src="vendor/pdf-lib.min.js"></script>
+  <script src="editor.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
