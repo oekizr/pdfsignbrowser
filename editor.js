@@ -91,24 +91,28 @@ async function renderPdf(bytesForRender) {
   const pdf = await pdfjsLib.getDocument({ data: bytesForRender }).promise;
 
   for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
-    const viewport = page.getViewport({ scale: RENDER_SCALE });
+    try {
+      const page = await pdf.getPage(i);
+      const viewport = page.getViewport({ scale: RENDER_SCALE });
 
-    const canvas = document.createElement('canvas');
-    canvas.width = viewport.width;
-    canvas.height = viewport.height;
-    const ctx = canvas.getContext('2d');
-    await page.render({ canvasContext: ctx, viewport }).promise;
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      const ctx = canvas.getContext('2d');
+      await page.render({ canvasContext: ctx, viewport }).promise;
 
-    const wrapper = document.createElement('div');
-    wrapper.className = 'page-wrapper';
-    wrapper.style.width = `${viewport.width}px`;
-    wrapper.style.height = `${viewport.height}px`;
-    wrapper.dataset.pageIndex = String(i - 1);
-    wrapper.appendChild(canvas);
+      const wrapper = document.createElement('div');
+      wrapper.className = 'page-wrapper';
+      wrapper.style.width = `${viewport.width}px`;
+      wrapper.style.height = `${viewport.height}px`;
+      wrapper.dataset.pageIndex = String(i - 1);
+      wrapper.appendChild(canvas);
 
-    viewerEl.appendChild(wrapper);
-    pageWrappers.push(wrapper);
+      viewerEl.appendChild(wrapper);
+      pageWrappers.push(wrapper);
+    } catch (err) {
+      throw new Error(`halaman ${i}: ${err.message}`);
+    }
   }
 }
 
@@ -601,7 +605,13 @@ async function init(overrideFileId) {
   if (name) document.title = `${name} - Drive PDF Signer`;
 
   setStatus('Merender PDF...');
-  await renderPdf(originalPdfBytes.slice().buffer);
+  try {
+    await renderPdf(originalPdfBytes.slice().buffer);
+  } catch (err) {
+    console.error(err);
+    setStatus(`Gagal merender PDF: ${err.message}`);
+    return;
+  }
   populatePageSelect();
   setStatus(name ? `${name} — siap diedit` : 'Siap. Tambahkan gambar/tanda tangan lalu simpan.');
 }
